@@ -1,7 +1,8 @@
-export const metadata = {
-  title: "KisanSense",
-  description: "AI Market Intelligence for Farmers",
-};
+import "./globals.css";
+import { LanguageProvider } from "@/lib/LanguageContext";
+import TranslatorProvider from "@/components/TranslatorProvider";
+import VoiceButton from "@/components/VoiceButton";
+import Navbar from "@/components/Navbar";
 
 export default function RootLayout({
   children,
@@ -10,8 +11,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="bg-gray-50 text-gray-900">
-        {children}
+      <body>
+        <LanguageProvider>
+          <TranslatorProvider>
+            <Navbar />
+            <main id="main-content">{children}</main>
+            <VoiceButton />
+          </TranslatorProvider>
+        </LanguageProvider>
       </body>
     </html>
   );
