@@ -525,23 +525,12 @@ export default function DashboardPage() {
               {mandiNameT || mandiName} {L.mandi}
             </p>
           </div>
-          <div className="flex items-center gap-4">
-            {/* Impact Calculator Button */}
-            <a
-              href={`/impact/commodity?commodity=${commodityId}&mandi=${mandiId}`}
-              className="flex items-center gap-2 bg-amber-400 hover:bg-amber-500 text-amber-900 font-bold text-sm px-4 py-2.5 rounded-xl transition-all shadow-sm hover:shadow-md"
-            >
-              <span className="text-base">💰</span>
-              Impact Calculator
-            </a>
-
-            {lastUpdated && (
-              <div className="text-right">
-                <p className="text-xs text-slate-400 font-medium uppercase tracking-wider">{L.lastUpdated}</p>
-                <p className="text-slate-700 font-bold text-lg">{formatDate(lastUpdated)}</p>
-              </div>
-            )}
-          </div>
+          {lastUpdated && (
+            <div className="text-right">
+              <p className="text-xs text-slate-400 font-medium uppercase tracking-wider">{L.lastUpdated}</p>
+              <p className="text-slate-700 font-bold text-lg">{formatDate(lastUpdated)}</p>
+            </div>
+          )}
         </div>
 
         {/* ── TOP STAT CARDS ── */}
