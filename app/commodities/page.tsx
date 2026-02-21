@@ -320,9 +320,7 @@ export default function CommoditiesPage() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
               {filtered.map(crop => {
-                const href = crop.mandi_id
-                  ? `/dashboard/${crop.id}/${crop.mandi_id}`
-                  : `/commodities/${crop.id}`;
+                const href = `/commodity/${crop.id}/markets`;
 
                 // Read from pre-built maps — zero t() / fetch calls here
                 const displayName     = translating ? crop.name     : tName(crop.name);
@@ -332,57 +330,65 @@ export default function CommoditiesPage() {
                   <Link
                     key={crop.id}
                     href={href}
-                    className="group block bg-white border border-green-200 rounded-2xl p-6 hover:border-green-600 hover:shadow-lg transition-all cursor-pointer relative overflow-hidden shadow-sm"
+                    className="group flex flex-col bg-white border border-green-200 rounded-2xl p-5 hover:border-green-600 hover:shadow-lg transition-all cursor-pointer relative shadow-sm"
                   >
                     {/* Popular Badge */}
                     {crop.isPopular && (
-                      <div className="absolute top-0 right-0 bg-yellow-100 px-4 py-1.5 rounded-bl-xl flex items-center gap-1.5">
-                        <Star className="w-3.5 h-3.5 text-yellow-600 fill-yellow-600" />
-                        <span className="text-[11px] font-extrabold text-yellow-800 uppercase tracking-wider">
+                      <div className="absolute top-0 right-0 bg-yellow-100 px-3 py-1 rounded-bl-xl flex items-center gap-1">
+                        <Star className="w-3 h-3 text-yellow-600 fill-yellow-600 shrink-0" />
+                        <span className="text-[10px] font-extrabold text-yellow-800 uppercase tracking-wider truncate">
                           {L.popular}
                         </span>
                       </div>
                     )}
 
-                    <div className="flex items-start justify-between mb-5">
-                      <div className="w-16 h-16 bg-green-50 rounded-2xl flex items-center justify-center group-hover:bg-green-100 transition-colors border border-green-100">
-                        <Sprout className="w-8 h-8 text-green-700" />
+                    {/* Icon + Trend row */}
+                    <div className="flex items-start justify-between mb-4 gap-2">
+                      <div className="w-14 h-14 shrink-0 bg-green-50 rounded-2xl flex items-center justify-center group-hover:bg-green-100 transition-colors border border-green-100">
+                        <Sprout className="w-7 h-7 text-green-700" />
                       </div>
 
-                      {crop.trend === "up" && (
-                        <div className="flex items-center text-sm font-bold text-green-700 bg-green-50 px-3 py-1.5 rounded-full border border-green-100">
-                          <TrendingUp className="w-4 h-4 mr-1.5" /> {L.rise}
-                        </div>
-                      )}
-                      {crop.trend === "down" && (
-                        <div className="flex items-center text-sm font-bold text-red-600 bg-red-50 px-3 py-1.5 rounded-full border border-red-100">
-                          <TrendingDown className="w-4 h-4 mr-1.5" /> {L.fall}
-                        </div>
-                      )}
-                      {(crop.trend === "flat" || crop.trend === null) && (
-                        <div className="flex items-center text-sm font-bold text-slate-400 bg-slate-50 px-3 py-1.5 rounded-full border border-slate-100">
-                          — {L.stable}
-                        </div>
-                      )}
+                      <div className="shrink-0">
+                        {crop.trend === "up" && (
+                          <div className="flex items-center text-xs font-bold text-green-700 bg-green-50 px-2 py-1 rounded-full border border-green-100">
+                            <TrendingUp className="w-3.5 h-3.5 mr-1" /> {L.rise}
+                          </div>
+                        )}
+                        {crop.trend === "down" && (
+                          <div className="flex items-center text-xs font-bold text-red-600 bg-red-50 px-2 py-1 rounded-full border border-red-100">
+                            <TrendingDown className="w-3.5 h-3.5 mr-1" /> {L.fall}
+                          </div>
+                        )}
+                        {(crop.trend === "flat" || crop.trend === null) && (
+                          <div className="flex items-center text-xs font-bold text-slate-400 bg-slate-50 px-2 py-1 rounded-full border border-slate-100">
+                            — {L.stable}
+                          </div>
+                        )}
+                      </div>
                     </div>
 
-                    <div>
-                      <h3 className="text-xl font-bold text-slate-900 mb-1">{displayName}</h3>
-                      <p className="text-sm text-slate-500 font-medium">{displayCategory}</p>
+                    {/* Name + Category */}
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-base font-bold text-slate-900 mb-0.5 line-clamp-2 break-words leading-snug">
+                        {displayName}
+                      </h3>
+                      <p className="text-xs text-slate-500 font-medium truncate">{displayCategory}</p>
                     </div>
 
+                    {/* Price */}
                     {crop.modal_price !== null && (
                       <div className="mt-3">
-                        <span className="text-lg font-extrabold text-green-700">
+                        <span className="text-base font-extrabold text-green-700">
                           ₹{crop.modal_price.toLocaleString("en-IN")}
                         </span>
                         <span className="text-xs text-slate-400 ml-1">{L.perQuintal}</span>
                       </div>
                     )}
 
-                    <div className="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between text-sm font-bold text-green-700 group-hover:text-green-800">
-                      {L.viewMarkets}
-                      <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    {/* Footer */}
+                    <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-green-700 group-hover:text-green-800">
+                      <span className="truncate mr-2">{L.viewMarkets}</span>
+                      <ChevronRight className="w-4 h-4 shrink-0 group-hover:translate-x-1 transition-transform" />
                     </div>
                   </Link>
                 );

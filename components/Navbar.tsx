@@ -27,17 +27,17 @@ export default function Navbar() {
           
           {/* Optional Navigation Links */}
           <Link
+            href="/"
+            className="hidden md:block text-gray-600 hover:text-green-700 transition text-sm font-medium"
+          >
+            Home
+          </Link>
+
+          <Link
             href="/commodities"
             className="hidden md:block text-gray-600 hover:text-green-700 transition text-sm font-medium"
           >
             Markets
-          </Link>
-
-          <Link
-            href="/dashboard"
-            className="hidden md:block text-gray-600 hover:text-green-700 transition text-sm font-medium"
-          >
-            Dashboard
           </Link>
 
           {/* Language Switcher */}
