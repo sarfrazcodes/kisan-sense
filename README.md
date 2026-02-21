@@ -63,30 +63,31 @@ Deployment -
 Vercel
 
 👥 Team & Contributions
+
 🔹 Mohd Sarfraz Saifi – Team Leader
 
-Led overall project direction and architecture
-Designed and implemented backend logic
-Built API integrations and data pipelines
-Connected frontend with backend systems
+Led overall project direction and architecture,
+Designed and implemented backend logic,
+Built API integrations and data pipelines,
+Connected frontend with backend systems,
 Debugged and resolved integration issues across modules
 
 🔹 Ujjwal Singh
 
-Developed multiple frontend pages
-Implemented UI components
+Developed multiple frontend pages,
+Implemented UI components,
 Integrated API keys and handled API-related frontend logic
 
 🔹 Kabir
 
-Developed multiple frontend pages
-Built real-time translation feature using API
+Developed multiple frontend pages,
+Built real-time translation feature using API,
 Enabled multilingual accessibility across the platform
 
 🔹 Khushi
 
-Conducted research on agricultural market challenges
-Contributed to theme design and user-focused structure
+Conducted research on agricultural market challenges,
+Contributed to theme design and user-focused structure,
 Assisted in refining platform positioning and problem framing
 
 Project Structure Overview
@@ -104,18 +105,18 @@ AI Recommendation
 Impact Vision
 KisanSense aims to:
 
-Improve transparency in agricultural markets
-Reduce dependency on middlemen
-Strengthen farmer bargaining power
-Support data-driven selling decisions
+Improve transparency in agricultural markets,
+Reduce dependency on middlemen,
+Strengthen farmer bargaining power,
+Support data-driven selling decisions,
 Make AI accessible to rural users
 
 📌 Future Improvements
-Advanced ML-based forecasting models
-Geo-based weather accuracy using lat/long
-SMS-based alerts for farmers
-Price alert notification system
-Mobile-first PWA optimization
-📄 License
+Advanced ML-based forecasting models,
+Geo-based weather accuracy using lat/long,
+SMS-based alerts for farmers,
+Price alert notification system,
+Mobile-first PWA optimization,
 
+📄 License - 
 Built as a Hackathon Project for educational and demonstration purposes.
