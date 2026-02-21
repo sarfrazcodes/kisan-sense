@@ -5,16 +5,16 @@ Live Project: https://kisan-sense-pv8o.vercel.app/
 KisanSense is an AI-powered agricultural market intelligence platform built to help farmers make informed selling decisions.
 It provides real-time mandi prices, price trend analysis, volatility insights, weather context, and AI-based recommendations in a simple and accessible interface.
 
-🚩 Problem Statement
+Problem Statement
 
 Many small and marginal farmers sell their crops without access to transparent, real-time market data.
 They often depend on middlemen due to lack of clear insights into:
 
-Current mandi prices
-Historical price trends
-Market volatility
-Future price movement
-Weather impact on supply
+1. Current mandi prices
+2. Historical price trends
+3. Market volatility
+4. Future price movement
+5. Weather impact on supply
 
 This results in reduced bargaining power and lower income.
 
@@ -22,13 +22,13 @@ This results in reduced bargaining power and lower income.
 
 KisanSense transforms raw mandi data into actionable intelligence.
 The platform:
-Fetches live mandi price data
-Stores and structures it using a scalable backend
-Generates historical price trends
-Calculates volatility and market risk
-Predicts near-future price movement
-Integrates weather insights
-Uses AI to generate simple recommendations like HOLD, SELL, or MONITOR
+1. Fetches live mandi price data
+2. Stores and structures it using a scalable backend
+3. Generates historical price trends
+4. Calculates volatility and market risk
+5. Predicts near-future price movement
+6. Integrates weather insights
+7. Uses AI to generate simple recommendations like HOLD, SELL, or MONITOR
 
 The goal is to support smarter selling decisions through data-backed insights.
 
@@ -44,26 +44,27 @@ The goal is to support smarter selling decisions through data-backed insights.
 
 🛠 Tech Stack
 
-Frontend
-Next.js (App Router)
-Tailwind CSS
+Frontend -
+Next.js (App Router),
+Tailwind CSS,
 Framer Motion
 
-Backend
-Supabase (Database & Backend Services)
+Backend -
+Supabase (Database & Backend Services),
 Custom API Routes (Next.js)
 
-APIs Used
-Data.gov Mandi API
-OpenWeather API
-Gemini AI API (AI Recommendation Engine)
+APIs Used -
+Data.gov Mandi API,
+OpenWeather API,
+Gemini AI API (AI Recommendation Engine),
 Translation API (Real-time language support)
 
-Deployment
+Deployment -
 Vercel
 
 👥 Team & Contributions
 🔹 Mohd Sarfraz Saifi – Team Leader
+
 Led overall project direction and architecture
 Designed and implemented backend logic
 Built API integrations and data pipelines
@@ -71,19 +72,21 @@ Connected frontend with backend systems
 Debugged and resolved integration issues across modules
 
 🔹 Ujjwal Singh
+
 Developed multiple frontend pages
 Implemented UI components
 Integrated API keys and handled API-related frontend logic
 
 🔹 Kabir
+
 Developed multiple frontend pages
 Built real-time translation feature using API
 Enabled multilingual accessibility across the platform
 
 🔹 Khushi
+
 Conducted research on agricultural market challenges
 Contributed to theme design and user-focused structure
-
 Assisted in refining platform positioning and problem framing
 
 Project Structure Overview
