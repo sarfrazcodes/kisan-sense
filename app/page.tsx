@@ -275,6 +275,51 @@ export default function HomePage() {
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #fefce8; }
         ::-webkit-scrollbar-thumb { background: #16a34a; border-radius: 3px; }
+
+        /* Responsive feature grid */
+        .feature-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 28px;
+        }
+        @media (max-width: 768px) {
+          .feature-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+
+        /* Responsive stats grid */
+        .stats-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 2px;
+          max-width: 1200px;
+          margin: 0 auto;
+        }
+        @media (max-width: 768px) {
+          .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+        }
+        @media (max-width: 480px) {
+          .stats-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+        .stat-item {
+          text-align: center;
+          padding: 32px;
+        }
+        @media (max-width: 768px) {
+          .stat-item {
+            padding: 20px;
+          }
+        }
+        @media (max-width: 480px) {
+          .stat-item {
+            padding: 16px;
+          }
+        }
       `}</style>
 
       {/* ── HERO ── */}
@@ -409,7 +454,7 @@ export default function HomePage() {
               {t("How KisanSense Helps")}
             </h2>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 28 }}>
+          <div className="feature-grid">
             {features.map(f => <FeatureCard key={f.title} {...f} />)}
           </div>
         </div>
@@ -417,14 +462,14 @@ export default function HomePage() {
 
       {/* ── STATS STRIP ── */}
       <section style={{ background: "#15803d", padding: "64px 40px" }}>
-        <div style={{ maxWidth: 1200, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 2 }}>
+        <div className="stats-grid">
           {[
             { target: stats.totalMandis, suf: "+", label: t("Mandis Connected") },
             { target: stats.totalCommodities, suf: "+", label: t("Commodities Tracked") },
             { target: stats.totalRecords, suf: "+", label: t("Price Data Points") },
             { target: 95, suf: "%", label: t("Prediction Accuracy") },
           ].map(({ target, suf, label }) => (
-            <div key={label} style={{ textAlign: "center", padding: 32 }}>
+            <div key={label} className="stat-item">
               <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 48, fontWeight: 900, color: "#fbbf24", lineHeight: 1 }}>
                 <AnimatedCounter target={target} suffix={suf} />
               </div>
