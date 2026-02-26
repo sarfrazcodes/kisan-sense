@@ -489,8 +489,20 @@ export default function DashboardPage() {
   const avg = prices.reduce((a, b) => a + b, 0) / prices.length;
   const variance = prices.reduce((sum, p) => sum + Math.pow(p - avg, 2), 0) / prices.length;
   const volatility = Math.sqrt(variance);
-  const volatilityLabel = volatility > 150 ? "High" : volatility > 50 ? "Moderate" : "Low";
-  const volatilityLabelT = volatility > 150 ? L.high : volatility > 50 ? L.moderate : L.low;
+
+  // Convert absolute volatility into a percentage of average price so that
+  // risk reflects relative swings and varies across mandis.
+  const volatilityPercent = avg > 0 ? (volatility / avg) * 100 : 0;
+
+  // Labels based on relative volatility rather than fixed rupee thresholds.
+  const volatilityLabel =
+    volatilityPercent > 10 ? "High" :
+    volatilityPercent > 5 ? "Moderate" :
+    "Low";
+  const volatilityLabelT =
+    volatilityLabel === "High" ? L.high :
+    volatilityLabel === "Moderate" ? L.moderate :
+    L.low;
 
   const trend = getTrend(prices);
   const trendIcon = trend === "up" ? "↑" : trend === "down" ? "↓" : "→";
@@ -511,8 +523,11 @@ export default function DashboardPage() {
   const recStyle = getRecStyle(recommendationAction);
   const volStyle = getVolatilityStyle(volatilityLabel);
 
-  // Confidence score — based on data points available (more data = higher confidence)
-  const confidence = Math.min(95, 40 + prices.length * 2);
+  // Confidence score — more days increases confidence but noisy (high volatility)
+  // should lower it.  Use a simple formula that varies per mandi.
+  let confidenceScore = 40 + prices.length * 2 - Math.min(volatilityPercent, 30);
+  confidenceScore = Math.max(20, Math.min(99, confidenceScore));
+  const confidence = Math.round(confidenceScore);
 
   // ─────────────────────────────────────────────
   // RENDER
@@ -596,8 +611,9 @@ export default function DashboardPage() {
           <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
             <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider mb-2">{L.marketRisk}</p>
             <div className="flex items-center gap-2 mb-2">
-              <ShieldAlert className={`w-5 h-5 ${volatility > 150 ? "text-red-500" : volatility > 50 ? "text-yellow-500" : "text-green-600"}`} />
+              <ShieldAlert className={`w-5 h-5 ${volatilityPercent > 10 ? "text-red-500" : volatilityPercent > 5 ? "text-yellow-500" : "text-green-600"}`} />
               <span className="font-bold text-slate-800">{volatilityLabelT}</span>
+              <span className="text-xs text-slate-400 ml-1">({volatilityPercent.toFixed(1)}%)</span>
             </div>
             <div className="w-full bg-slate-100 rounded-full h-1.5">
               <div className={`${volStyle.bar} h-1.5 rounded-full transition-all`} style={{ width: volStyle.width }} />
