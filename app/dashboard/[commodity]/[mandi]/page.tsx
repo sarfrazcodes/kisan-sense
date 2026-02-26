@@ -189,8 +189,9 @@ const DEFAULT_LABELS: UILabels = {
 // ─────────────────────────────────────────────
 function getTrend(prices: number[]): "up" | "down" | "flat" {
   if (prices.length < 2) return "flat";
-  const recent = prices.slice(-5);
-  const diff = ((recent[recent.length - 1] - recent[0]) / recent[0]) * 100;
+  const first = prices[0];
+  const last = prices[prices.length - 1];
+  const diff = ((last - first) / first) * 100;
   if (diff > 1.5) return "up";
   if (diff < -1.5) return "down";
   return "flat";
@@ -390,24 +391,43 @@ export default function DashboardPage() {
         try { setRecommendationT(await t(insightText)); } catch { setRecommendationT(insightText); }
 
       } catch {
-        // Rule-based fallback with detailed text
-        const trend = getTrend(prices);
-        const avg = prices.reduce((a, b) => a + b, 0) / prices.length;
+        // Rule-based fallback with detailed text — based on PREDICTED price gain
         const latest = prices[prices.length - 1];
+        const avg = prices.reduce((a, b) => a + b, 0) / prices.length;
         const changeFromAvg = (((latest - avg) / avg) * 100).toFixed(1);
+
+        // Calculate predicted price using linear regression
+        const n = prices.length;
+        const x = Array.from({ length: n }, (_, i) => i);
+        const sumX = x.reduce((a, b) => a + b, 0);
+        const sumY = prices.reduce((a, b) => a + b, 0);
+        const sumXY = x.reduce((sum, val, i) => sum + val * prices[i], 0);
+        const sumXX = x.reduce((sum, val) => sum + val * val, 0);
+        const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+        const intercept = (sumY - slope * sumX) / n;
+        const predictedPrice = intercept + slope * n;
+        const expectedGain = predictedPrice - latest;
+        const expectedGainPct = ((expectedGain / latest) * 100).toFixed(1);
 
         let action = "HOLD";
         let insight = "";
 
-        if (trend === "up") {
-          action = "SELL NOW";
-          insight = `${commodityName} prices at ${mandiName} are showing a strong upward trend, currently ₹${latest.toLocaleString("en-IN")}/quintal — ${changeFromAvg}% above the ${prices.length}-day average of ₹${avg.toFixed(0)}. Momentum is positive with consistent buying pressure. We recommend selling at current rates to capture this peak. If you can wait 2-3 days, prices may rise further, but the risk of reversal also increases.`;
-        } else if (trend === "down") {
+        // Recommendation based on EXPECTED GAIN (predicted future price)
+        if (expectedGain > 50) {
           action = "WAIT";
-          insight = `${commodityName} prices at ${mandiName} are under downward pressure, currently at ₹${latest.toLocaleString("en-IN")}/quintal — ${Math.abs(Number(changeFromAvg))}% below the ${prices.length}-day average of ₹${avg.toFixed(0)}. This decline may be driven by increased arrivals or seasonal demand shifts. We recommend holding stock for 3-5 days to wait for price stabilization. Monitor daily arrivals — if volumes drop, prices typically recover within a week.`;
-        } else {
+          insight = `${commodityName} prices at ${mandiName} are expected to rise significantly, currently ₹${latest.toLocaleString("en-IN")}/quintal. Our forecast predicts prices will reach ₹${Math.round(predictedPrice).toLocaleString("en-IN")}/quintal within 3-5 days — a potential gain of ₹${expectedGain.toFixed(0)}/quintal (${expectedGainPct}%). WAIT before selling — hold stock to capture the expected price increase. Monitor market conditions daily, but the trend is favorable.`;
+        } else if (expectedGain > 10) {
           action = "HOLD";
-          insight = `${commodityName} prices at ${mandiName} are stable at ₹${latest.toLocaleString("en-IN")}/quintal, close to the ${prices.length}-day average of ₹${avg.toFixed(0)}. There is no strong signal for an immediate price move in either direction. Hold your stock and monitor for the next 2-3 days. A breakout above ₹${(latest * 1.03).toFixed(0)} would signal a good selling opportunity.`;
+          insight = `${commodityName} prices at ${mandiName} show a positive outlook, currently ₹${latest.toLocaleString("en-IN")}/quintal. Our forecast suggests a modest increase to ₹${Math.round(predictedPrice).toLocaleString("en-IN")}/quintal in the next 3-5 days, representing a potential gain of ₹${expectedGain.toFixed(0)}/quintal (${expectedGainPct}%). HOLD your stock for now — prices are trending favorably. A minor dip may occur, but the overall direction is positive.`;
+        } else if (expectedGain > -10) {
+          action = "HOLD";
+          insight = `${commodityName} prices at ${mandiName} are relatively stable at ₹${latest.toLocaleString("en-IN")}/quintal, with minimal expected change. Our forecast indicates prices will hover around ₹${Math.round(predictedPrice).toLocaleString("en-IN")}/quintal over the next 3-5 days. HOLD your stock and monitor daily movements. No urgent need to sell, but watch for any sudden shifts in market sentiment or supply conditions.`;
+        } else if (expectedGain > -50) {
+          action = "SELL NOW";
+          insight = `${commodityName} prices at ${mandiName} are showing signs of decline, currently at ₹${latest.toLocaleString("en-IN")}/quintal. Our forecast predicts prices may drop to ₹${Math.round(predictedPrice).toLocaleString("en-IN")}/quintal within 3-5 days — a potential loss of ₹${Math.abs(expectedGain).toFixed(0)}/quintal (${expectedGainPct}%). SELL NOW to avoid further losses. Market conditions are shifting downward in the short term.`;
+        } else {
+          action = "SELL NOW";
+          insight = `${commodityName} prices at ${mandiName} are under significant downward pressure, currently at ₹${latest.toLocaleString("en-IN")}/quintal. Our forecast suggests prices could fall to ₹${Math.round(predictedPrice).toLocaleString("en-IN")}/quintal within 3-5 days — a potential loss of ₹${Math.abs(expectedGain).toFixed(0)}/quintal (${expectedGainPct}%). SELL NOW to minimize losses. Market conditions appear unfavorable in the short term.`;
         }
 
         setRecommendationAction(action);
@@ -626,7 +646,7 @@ export default function DashboardPage() {
                       tick={{ fontSize: 11, fill: "#94a3b8", fontWeight: 500 }}
                       tickFormatter={v => `₹${v}`} width={65} />
                     <Tooltip
-                      formatter={(value: number) => [`₹${value?.toLocaleString("en-IN")}`, ""]}
+                      formatter={(value: number | undefined) => [`₹${value?.toLocaleString("en-IN")}`, ""]}
                       contentStyle={{ borderRadius: "10px", border: "1px solid #e2e8f0", fontSize: "12px", fontWeight: 600 }}
                     />
                     <Line type="monotone" dataKey="price" stroke="#15803d" strokeWidth={2.5}

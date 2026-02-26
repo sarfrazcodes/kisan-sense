@@ -105,20 +105,37 @@ function ruleBasedFallback(prices: number[], commodity: string, mandi: string) {
   const avg = prices.reduce((a, b) => a + b, 0) / prices.length;
   const changeFromAvg = (((latest - avg) / avg) * 100).toFixed(1);
 
-  // Determine trend
-  const recent = prices.slice(-5);
-  const diff = prices.length > 1
-    ? ((recent[recent.length - 1] - recent[0]) / recent[0]) * 100
-    : 0;
+  // Determine PREDICTED price trend using linear regression
+  const n = prices.length;
+  const x = Array.from({ length: n }, (_, i) => i);
+  const sumX = x.reduce((a, b) => a + b, 0);
+  const sumY = prices.reduce((a, b) => a + b, 0);
+  const sumXY = x.reduce((sum, val, i) => sum + val * prices[i], 0);
+  const sumXX = x.reduce((sum, val) => sum + val * val, 0);
+  const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+  const intercept = (sumY - slope * sumX) / n;
+  const predictedPrice = intercept + slope * n;
+  const expectedGain = predictedPrice - latest;
+  const expectedGainPct = ((expectedGain / latest) * 100).toFixed(1);
 
   let recommendation = "";
 
-  if (diff > 1.5) {
-    recommendation = `${commodity} prices at ${mandi} are on a strong upward trend, currently at ₹${latest}/quintal — ${changeFromAvg}% above the ${prices.length}-day average of ₹${avg.toFixed(0)}. Buying pressure remains high with consistent price gains. SELL NOW to capture this peak. If storage costs are low, you may hold for 2-3 more days, but watch for reversal signals as prices approach seasonal highs.`;
-  } else if (diff < -1.5) {
-    recommendation = `${commodity} prices at ${mandi} are declining, currently at ₹${latest}/quintal — ${Math.abs(Number(changeFromAvg))}% below the ${prices.length}-day average of ₹${avg.toFixed(0)}. Increased arrivals or reduced demand may be driving this fall. WAIT before selling — hold stock for 3-5 days to allow the market to stabilize. Monitor daily arrival volumes; if supplies drop, prices typically recover within a week.`;
+  // Recommendation based on EXPECTED GAIN (predicted future price)
+  if (expectedGain > 50) {
+    // Prices expected to rise significantly
+    recommendation = `${commodity} prices at ${mandi} are expected to rise significantly, currently at ₹${latest}/quintal. Our forecast predicts prices will reach ₹${Math.round(predictedPrice)}/quintal within 3-5 days — a potential gain of ₹${expectedGain.toFixed(0)}/quintal (${expectedGainPct}%). WAIT before selling — hold stock to capture the expected price increase. Monitor market conditions daily, but the trend is favorable.`;
+  } else if (expectedGain > 10) {
+    // Prices expected to rise moderately
+    recommendation = `${commodity} prices at ${mandi} show a positive outlook, currently at ₹${latest}/quintal. Our forecast suggests a modest increase to ₹${Math.round(predictedPrice)}/quintal in the next 3-5 days, representing a potential gain of ₹${expectedGain.toFixed(0)}/quintal (${expectedGainPct}%). HOLD your stock for now — prices are trending favorably. A minor dip may occur, but the overall direction is positive.`;
+  } else if (expectedGain > -10) {
+    // Prices expected to remain relatively stable
+    recommendation = `${commodity} prices at ${mandi} are relatively stable at ₹${latest}/quintal, with minimal expected change. Our forecast indicates prices will hover around ₹${Math.round(predictedPrice)}/quintal over the next 3-5 days. HOLD your stock and monitor daily movements. No urgent need to sell, but watch for any sudden shifts in market sentiment or supply conditions.`;
+  } else if (expectedGain > -50) {
+    // Prices expected to decline moderately
+    recommendation = `${commodity} prices at ${mandi} are showing signs of decline, currently at ₹${latest}/quintal. Our forecast predicts prices may drop to ₹${Math.round(predictedPrice)}/quintal within 3-5 days — a potential loss of ₹${Math.abs(expectedGain).toFixed(0)}/quintal (${expectedGainPct}%). We recommend WAITING for 2-3 days to see if the decline stabilizes. Monitor arrival volumes; if supplies decrease, prices often recover.`;
   } else {
-    recommendation = `${commodity} prices at ${mandi} are stable at ₹${latest}/quintal, near the ${prices.length}-day average of ₹${avg.toFixed(0)}. There is no strong signal for an immediate price move. HOLD your stock and monitor daily. A breakout above ₹${(latest * 1.03).toFixed(0)} would be a strong selling signal, while a drop below ₹${(latest * 0.97).toFixed(0)} would suggest selling immediately to minimize losses.`;
+    // Prices expected to fall significantly
+    recommendation = `${commodity} prices at ${mandi} are under significant downward pressure, currently at ₹${latest}/quintal. Our forecast suggests prices could fall to ₹${Math.round(predictedPrice)}/quintal within 3-5 days — a potential loss of ₹${Math.abs(expectedGain).toFixed(0)}/quintal (${expectedGainPct}%). SELL NOW to minimize losses. Market conditions appear unfavorable in the short term.`;
   }
 
   return NextResponse.json({ recommendation });
